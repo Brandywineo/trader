@@ -82,3 +82,7 @@ The unit restarts the web service after a crash, but deliberately does not auto-
 ## Public dashboard
 
 `/` serves a public read-only animated room. `/owner` serves the private login and controls. `/api/public` explicitly returns only paper-account display metrics, basic candidate data, snapshot history and selected worker events. It does not return credentials, connection status, CSRF tokens, API budgets or private settings. Account paper performance is intentionally public. Room screens and agent motion are decorative; market/equity plots use recorded snapshots only. Idle/pending roles are labelled. Social collection is still pending. Reduce Motion system preferences disable animation.
+
+### Room revision
+
+The public layout uses a compact pink-framed two-row console, a detailed frontal SVG room, central live snapshot display, server rack, radar, plants and nine distinct characters. The CRAWLER label represents market HTTP requests, not an implemented X crawler. Eight role cards are visible; the Jev station is inside the room. Character journeys replay newly observed real cycle events, labelled as event replay, rather than implying agents are still executing completed work. Idle bobbing, rack lights and radar motion are decorative. Stop or loss of the public connection cancels journeys. Phase events are transient and reset on service restart. Market charts remain snapshot lines, not OHLC candlesticks. Tests exercise real public-page JavaScript against a minimal DOM/canvas surface; this does not replace browser rendering verification.

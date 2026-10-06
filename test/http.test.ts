@@ -23,7 +23,7 @@ test('HTTP owner boundary, secret redaction, settings and start safety',async()=
  assert.equal((await post('start',{mode:'paper'},auth)).status,200);
  await new Promise(r=>setTimeout(r,100));
  const running=await(await fetch(origin+'/api/state',{headers:{Cookie:cookie}})).json();assert.equal(running.running,true);assert.equal(running.positions.length,1);assert.equal(running.settings.cash,975);assert.equal(running.aiCallsToday,0);
- const publicRunning=await(await fetch(origin+'/api/public')).json();assert.equal(publicRunning.openPositions.length,1);assert.equal(publicRunning.history.length,1);assert.equal(publicRunning.history[0].symbol,'FIXTURE');assert.equal(publicRunning.scanned,1);assert(!('token' in publicRunning.openPositions[0]));assert(!('aiCallsToday' in publicRunning));
+ const publicRunning=await(await fetch(origin+'/api/public')).json();assert.equal(publicRunning.openPositions.length,1);assert.equal(publicRunning.history.length,1);assert.equal(publicRunning.history[0].symbol,'FIXTURE');assert.equal(publicRunning.scanned,1);assert(publicRunning.visualEvents.some((e:any)=>e.role==='scan'));assert(publicRunning.visualEvents.some((e:any)=>e.role==='vet'));assert(publicRunning.visualEvents.some((e:any)=>e.role==='fills'));assert(publicRunning.visualEvents.every((e:any,i:number,a:any[])=>i===0||e.id>a[i-1].id));assert(!('token' in publicRunning.openPositions[0]));assert(!('aiCallsToday' in publicRunning));
  assert.equal((await post('start',{mode:'paper'})).status,401);
  assert.equal((await post('connections',{name:'jev',key:'changed'},auth)).status,409);
  assert.equal((await post('stop',{},auth)).status,200);
