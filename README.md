@@ -30,7 +30,7 @@ Setup prompts for the app origin and generates the owner password and encryption
 | X | Encrypted token storage and `/2/users/me` probe requiring appropriate user token/scopes; crawler and social analysis pending |
 | Solana RPC | Public `getHealth` probe only; stored keys are unused, paid RPC integration pending |
 | Wallet / execution | **No signer, wallet key storage, swaps or live trading**; live start requests rejected |
-| Dashboard | Functional monitor and connection controls; animated agent room and rich candlestick chart pending |
+| Dashboard | Public animated SVG operations room at `/`, private controls at `/owner`, recorded snapshot charts; candlestick charts pending |
 | Database | SQLite WAL for a single process; PostgreSQL/queue split deferred |
 | Budget | Durable UTC daily Jev request cap. Every attempted call reserves a slot before sending, including failures. Not a dollar billing cap |
 
@@ -78,3 +78,7 @@ The unit restarts the web service after a crash, but deliberately does not auto-
 ## Verification
 
 `npm test` covers encryption tampering, password/origin checks, paper accounting and risk filters, plus HTTP authentication, CSRF, secret redaction, settings validation and live-mode rejection. No paid provider calls are made by tests. Real provider credentials and Hestia deployment must be verified on your server.
+
+## Public dashboard
+
+`/` serves a public read-only animated room. `/owner` serves the private login and controls. `/api/public` explicitly returns only paper-account display metrics, basic candidate data, snapshot history and selected worker events. It does not return credentials, connection status, CSRF tokens, API budgets or private settings. Account paper performance is intentionally public. Room screens and agent motion are decorative; market/equity plots use recorded snapshots only. Idle/pending roles are labelled. Social collection is still pending. Reduce Motion system preferences disable animation.
