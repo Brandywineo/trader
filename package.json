@@ -1,0 +1,1 @@
+{"name":"agent-trader","version":"0.1.0","private":true,"type":"module","engines":{"node":">=24"},"scripts":{"start":"node --env-file=.env src/server.ts","test":"node --test test/*.test.ts","setup":"node src/setup.ts"}}

@@ -1,0 +1,4 @@
+export function eligible(p:any){return Number.isFinite(p.price)&&p.price>0&&Number.isFinite(p.liquidity)&&p.liquidity>=50000&&Number.isFinite(p.volume)&&p.volume>=100000&&Number.isFinite(p.change)&&p.change>0;}
+export function exitReason(entry:number,price:number,ageMs:number){const change=price/entry-1;return change<=-0.05?'stop':change>=0.1?'target':ageMs>=3600000?'timeout':null;}
+export function fillBuy(cash:number,budget:number,price:number){if(!Number.isFinite(cash)||!Number.isFinite(budget)||!Number.isFinite(price)||price<=0||budget<=0||budget>cash)throw new Error('Invalid paper order');return {cash:cash-budget,quantity:budget*0.995/(price*1.005),entry:price*1.005};}
+export function fillSell(quantity:number,price:number){if(!Number.isFinite(quantity)||!Number.isFinite(price)||quantity<=0||price<=0)throw new Error('Invalid quote');return quantity*price*0.995*0.995;}

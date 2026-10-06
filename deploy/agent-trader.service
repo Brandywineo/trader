@@ -1,0 +1,21 @@
+[Unit]
+Description=Agent Trader owner monitor and paper worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jevv
+WorkingDirectory=/home/jevv/web/trader.hs.vc/public_html
+ExecStart=/usr/bin/node --env-file=.env src/server.ts
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/jevv/web/trader.hs.vc/public_html/data
+
+[Install]
+WantedBy=multi-user.target
