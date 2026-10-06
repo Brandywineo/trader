@@ -18,5 +18,6 @@ test('public room renders data and replays only newly observed events',async()=>
  assert.notDeepEqual(JSON.parse(JSON.stringify(publicFunctions.routeFor('scan').at(-1))),JSON.parse(JSON.stringify(publicFunctions.routeFor('vet').at(-1))));
  state={...state,history:[{at:0,equity:1000,symbol:'TEST',price:2},{at:60000,equity:1000,symbol:'TEST',price:3},{at:300000,equity:1000,symbol:'TEST',price:2.5}]};await intervals.at(-1)!();assert.match(elements.get('chartMode').textContent,/^5m sampled OHLC · .* EAT$/);assert.equal(elements.get('deskValue-scan').textContent,'1 PAIRS');assert.equal(elements.get('metric-vet').textContent,'1/1');
  assert.equal(publicFunctions.chartFocus([...state.history,{at:400000,equity:1000,symbol:'NEW',price:7}]).symbol,'TEST');
+ frames.shift()!(20000);assert.equal(elements.get('agent-scan').attrs.transform,'translate(307 362)');assert.equal(elements.get('taskBubble').hidden,true);
  state={...state,running:false};await intervals.at(-1)!();assert.equal(elements.get('taskBubble').hidden,true);assert.equal(elements.get('agent-scan').attrs.transform,'translate(307 362)');
 });

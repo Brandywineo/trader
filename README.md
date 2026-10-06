@@ -90,3 +90,7 @@ The public layout uses a compact pink-framed two-row console, a detailed frontal
 ### Scene detail update
 
 Furniture is scaled to 76% and character bodies to 62% of the earlier scene, with shaded monitor frames, glass reflections, keyboards and chairs. Characters use separate aisle routes, pause at a destination, and return, with task bubbles anchored above them. Desk displays use actual scan counts, eligibility counts, cash/equity and recorded series. The temporary pipeline mesh illustrates task routing; it does not represent a holder or wallet relationship graph. Offline or stopped state clears task motion and its overlay.
+
+### Continuous observations and filter explanations
+
+A watched token is persisted in SQLite and requested on each scan alongside open positions and recent profiles. Snapshot rows include token identity so charts do not join tokens with identical symbols. Missing quotes are not interpolated. Rejection reasons expose the same price, liquidity, volume and momentum rules used by the paper worker. Character journeys use elapsed animation timestamps, so a throttled frame no longer stretches the route. The watched token is selected automatically; owner watchlist selection remains a future improvement.

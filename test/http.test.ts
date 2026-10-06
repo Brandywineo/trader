@@ -27,6 +27,7 @@ test('HTTP owner boundary, secret redaction, settings and start safety',async()=
  assert.equal((await post('start',{mode:'paper'})).status,401);
  assert.equal((await post('connections',{name:'jev',key:'changed'},auth)).status,409);
  assert.equal((await post('stop',{},auth)).status,200);
+ assert.equal((await post('start',{mode:'paper'},auth)).status,200);await new Promise(r=>setTimeout(r,100));const second=await(await fetch(origin+'/api/public')).json();assert.equal(second.history.length,2);assert.equal(second.history[1].token,second.history[0].token);assert.deepEqual(second.candidates[0].reasons,[]);assert.equal((await post('stop',{},auth)).status,200);
  assert.equal((await post('connections/delete',{name:'jev'},auth)).status,200);
  state=await(await fetch(origin+'/api/state',{headers:{Cookie:cookie}})).json();assert.equal(state.running,false);assert.equal(state.aiCallsToday,0);
  assert.equal((await post('logout',{},auth)).status,200);assert.equal((await fetch(origin+'/api/state',{headers:{Cookie:cookie}})).status,401);
