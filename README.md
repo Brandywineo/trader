@@ -17,7 +17,7 @@ Setup prompts for the app origin and generates the owner password and encryption
 1. Sign in with the generated password.
 2. Add keys under Connections. Secrets are encrypted using AES-256-GCM and never returned to the browser.
 3. Test the connection. A metadata probe verifies accepted credentials, not inference credit or full trading readiness.
-4. Leave paid AI off to run the free deterministic paper worker. To use Jev, save/test its key, enable Jev scoring and set the daily request cap.
+4. Leave paid AI off to run the free deterministic paper worker. To use an adapter, stop the worker, save/test its key, enable it in Worker settings and set daily limits. Select one AI provider and a model your account can access.
 5. Click **Start paper worker**. It scans immediately and every minute. Click **Stop** to pause all paper activity; open positions remain. Stop does not liquidate positions. Start resumes quote checks. Service restarts always leave the worker stopped.
 
 ## Implemented vs pending
@@ -26,19 +26,19 @@ Setup prompts for the app origin and generates the owner password and encryption
 |---|---|
 | DEX Screener | Reads latest token profiles and Solana pair snapshots, limited to 20 recent profiles plus open positions; incomplete market coverage |
 | Jev | Models-endpoint test and optional real paid Noul scoring before paper entry |
-| OpenAI / Grok | Encrypted key storage and authenticated models probe only; analysis adapters pending |
-| X | Encrypted token storage and `/2/users/me` probe requiring appropriate user token/scopes; crawler and social analysis pending |
-| Solana RPC | Public `getHealth` probe only; stored keys are unused, paid RPC integration pending |
+| OpenAI / Grok / Groq | Encrypted keys, models probe and validated JSON watchlist scoring; owner selects one provider/model |
+| X | App Bearer Token, recent-search probe, up to 10 recent address mentions; cached 15 minutes and available to AI scoring |
+| Solana RPC | Helius API key, authenticated slot probe, mint/freeze authority and largest token-account concentration checks; cached five minutes |
 | Wallet / execution | **No signer, wallet key storage, swaps or live trading**; live start requests rejected |
-| Dashboard | Public animated SVG operations room at `/`, private controls at `/owner`, recorded snapshot charts; candlestick charts pending |
+| Dashboard | Public animated SVG operations room at `/`, private controls at `/owner`, recorded snapshot charts; sampled five-minute OHLC candles |
 | Database | SQLite WAL for a single process; PostgreSQL/queue split deferred |
-| Budget | Durable UTC daily Jev request cap. Every attempted call reserves a slot before sending, including failures. Not a dollar billing cap |
+| Budget | Durable UTC daily AI request cap plus separate Helius-check and X-search caps. Every attempted call reserves a slot before sending, including failures. Not a dollar billing cap |
 
-Start with no subscriptions. Paid calls occur only after enabling Jev and clicking Start. Connection tests can have provider charges (especially X); they are owner-triggered and not covered by the worker's Jev cap. Keys do not activate pending adapters. Do not enter wallet seeds or private keys in this application.
+Start with no subscriptions. Worker adapter calls occur only after enabling an adapter and clicking Start. Connection tests can have provider charges (especially X); they are owner-triggered and not covered by the worker caps. Saving keys alone does not enable adapters. Do not enter wallet seeds or private keys in this application.
 
 ## Paper strategy and limitations
 
-Baseline test strategy: require USD liquidity >= 50,000, 24h volume >= 100,000 and positive 5m price change. Optional Jev gate requires >= 0.8 watchlist score. The AI score is not proof of safety, calibrated trading success or expected profit. Maximum 3 positions, USD 25 per entry, one-hour token cooldown, 5% stop, 10% target and one-hour timeout. Simulated fills charge 0.5% fee plus 0.5% slippage each side. Initial paper cash is USD 1,000. Missing quotes leave positions open and flag valuations stale; stops can gap between one-minute samples. There is no chain-fee model, historical backtest, contract authority/holder/honeypot vetting, verified live fills or demonstrated profitable edge. Never deploy this strategy as live execution without those layers.
+Baseline test strategy: require USD liquidity >= 50,000, 24h volume >= 100,000 and positive 5m price change. Optional AI gate requires >= 0.8 watchlist score. The AI score is not proof of safety, calibrated trading success or expected profit. Maximum 3 positions, USD 25 per entry, one-hour token cooldown, 5% stop, 10% target and one-hour timeout. Simulated fills charge 0.5% fee plus 0.5% slippage each side. Initial paper cash is USD 1,000. Missing quotes leave positions open and flag valuations stale; stops can gap between one-minute samples. There is no chain-fee model, historical backtest, complete contract-extension/holder/honeypot vetting, verified live fills or demonstrated profitable edge. Never deploy this strategy as live execution without those layers.
 
 ## Hestia deployment
 
@@ -81,7 +81,7 @@ The unit restarts the web service after a crash, but deliberately does not auto-
 
 ## Public dashboard
 
-`/` serves a public read-only animated room. `/owner` serves the private login and controls. `/api/public` explicitly returns only paper-account display metrics, basic candidate data, snapshot history and selected worker events. It does not return credentials, connection status, CSRF tokens, API budgets or private settings. Account paper performance is intentionally public. Room screens and agent motion are decorative; market/equity plots use recorded snapshots only. Idle/pending roles are labelled. Social collection is still pending. Reduce Motion system preferences disable animation.
+`/` serves a public read-only animated room. `/owner` serves the private login and controls. `/api/public` explicitly returns only paper-account display metrics, basic candidate data, snapshot history and selected worker events. It does not return credentials, connection status, CSRF tokens, API budgets or private settings. Account paper performance is intentionally public. Room screens and agent motion are decorative; market/equity plots use recorded snapshots only. Idle/pending roles are labelled. X address-mention collection is optional; raw posts remain owner-only. Reduce Motion system preferences disable animation.
 
 ### Room revision
 
@@ -94,3 +94,11 @@ Furniture is scaled to 76% and character bodies to 62% of the earlier scene, wit
 ### Continuous observations and filter explanations
 
 A watched token is persisted in SQLite and requested on each scan alongside open positions and recent profiles. Snapshot rows include token identity so charts do not join tokens with identical symbols. Missing quotes are not interpolated. Rejection reasons expose the same price, liquidity, volume and momentum rules used by the paper worker. Character journeys use elapsed animation timestamps, so a throttled frame no longer stretches the route. The watched token is selected automatically; owner watchlist selection remains a future improvement.
+
+### Adapter setup
+
+Use the SOLANA connection for a **Helius API key**, not an RPC URL. Use X for an **app Bearer Token** with recent-search access, not an API key/secret pair or user-token probe. Groq and Grok are separate slots. Save and test each key while stopped, select adapters and model, save settings, then Start paper worker. Models probes validate credentials, not inference balance or selected-model access. Errors, malformed AI output, exhausted limits or adverse required on-chain checks block that candidate's new entry. Existing exit checks run before enrichment. A fresh market quote is fetched after enrichment before entry.
+
+AI cap counts each inference attempt (success or failure), shared across the selected providers. Helius cap counts logical checks, each using two sequential RPC calls; X cap counts recent searches. Tests are owner-triggered and outside those caps, and X test searches may be billed. Zero limits block uncached checks. No automatic fallback to another paid provider. The worker evaluates one entry candidate per scan; enabling adapters does not independently create trading agents. All execution stays simulated.
+
+On-chain checks support the original SPL Token mint format only. Token-2022 is conservatively blocked until extension handling is implemented. A largest token-account share above 20% blocks entry; pool/custody accounts may trigger that rule and it is not a holder-ownership measurement. Social posts are untrusted data, not executable instructions or verified facts. A 0.8 AI watchlist score is not a profit probability. Default model IDs are editable because account access and provider model availability change.
