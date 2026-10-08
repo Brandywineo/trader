@@ -111,3 +111,16 @@ Stop the worker and wait for the current cycle to finish, then use `/owner` → 
 Daily loss compares current cash plus net marked open positions against a persisted UTC-day baseline. On the first scan of a day, the baseline is reconstructed from current cash, open costs and that day's realized P/L; it persists across restarts and is not reset by changing settings. Entry fees/slippage and marked losses count. Reaching the daily loss limit blocks entries; stop/target/timeout exits still run while the worker runs. Missing open-position prices block entries. A full Stop pauses entries and exits. Prices are checked once per minute, so losses may exceed the configured threshold between scans. Settings do not accept real capital deposits, reset the simulated balance or enable live execution.
 
 Deploy with `bash deploy/update-hestia.sh`; then sign in, review sizing and click Start paper worker. Charts load independently of Start. Wallet funding, signing and Jupiter live execution remain unimplemented and live mode is rejected.
+
+
+## Owner screens and watched wallet
+
+Owner navigation separates Overview, Connections, Worker settings, Wallet and Trades. Each has a bookmarkable `/owner/<screen>` URL under the same owner session. Saving or testing provider keys remains on Connections; sizing and adapter controls remain on Worker settings. The public room stays read-only.
+
+Wallet is a private read-only mainnet watch screen. Save a public address after checking it, with the worker stopped. No wallet is created and no ownership is proven. The server validates that the base58 address decodes to exactly 32 bytes and reads through the encrypted saved Helius key. Neither addresses nor balances are included in `/api/public`. GET `/api/wallet` requires owner authentication; saving/removing addresses also requires origin and CSRF validation.
+
+Each wallet snapshot makes four read-only RPC requests: SOL balance, SPL accounts, Token-2022 accounts and latest 20 address signatures. Successful/partial snapshots and failures are cached for 90 seconds, in-flight reads are shared, and rapid address changes cannot bypass the refresh cooldown. Wallet reads are outside worker adapter limits and may consume Helius credits. Missing data is shown unavailable, never replaced with a fake zero. Fully failed refreshes can display an explicitly stale previous snapshot. Exact token units are formatted from raw integer strings. Holdings are grouped by mint; only Circle native mainnet USDC (`EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`) is labelled USDC. Other token names and prices are not inferred. Frozen holdings are flagged.
+
+Funding details consist of the watched address, copy control, network identification and address Explorer link. Transfers happen in the owner's wallet app. This screen does not generate QR codes, create deposits/withdrawals, accept wallet secrets, allocate live capital or authorize spending. History contains address signatures with Explorer links, not classified cash flows, amounts or a complete token-account transfer ledger. Paper balance remains separate. Live mode remains rejected.
+
+Next implementation: isolated signer and Jupiter quote/simulation flow, transaction validation and reconciliation, followed by explicitly owner-enabled live execution with enforced limits.
