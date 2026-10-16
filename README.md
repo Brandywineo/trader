@@ -149,3 +149,9 @@ Broad symbol searches are removed. GeckoTerminal trending/top pools are read eve
 
 ### Inactive chart recovery
 A successful HTTP candle response is not sufficient to label a chart current. The latest actual candle must be within 15 minutes for 1m/5m charts, or three hours for 1h charts (three frame intervals, with a 15-minute floor). Empty intervals are not fabricated. An inactive watched-token series switches to a labelled canonical wrapped-SOL fallback only when SOL candles are current. If both are unavailable or old, watched-token history remains explicitly labelled historical/inactive. This does not change the persisted watch, worker candidates, trading rules or owner settings. Chart headers show latest candle time separately from HTTP fetch time; cached bars age out of current status too.
+
+### Paper AI research mode
+
+This update adds `ai_mode`, defaulting existing and new installations to `advisory`. AI remains optional and bounded by the existing request cap, pacing and cache. In advisory mode low scores, unavailable AI and pacing do not veto paper entries; market filters, enabled Helius/social checks, fresh quotes and owner risk limits remain mandatory. Scores obtained before entry are retained with the position for outcome review. Entries during AI pacing may have no score. Select **Strict gate** in owner Worker settings to restore score-based vetoes. The 0.80 threshold is retained and only applies in strict mode; neither mode establishes profitability. No live execution is added.
+
+Owner overview now separately lists the latest 30 retained chain rejection details, so market scan rows cannot hide their reasons. Retention remains bounded to 30,000 audit rows. Restart still pauses the worker; click Start after pulling.

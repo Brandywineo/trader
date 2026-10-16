@@ -16,7 +16,7 @@ test('HTTP owner boundary, secret redaction, settings and start safety',async()=
  const secret='test-secret-do-not-return';assert.equal((await post('connections',{name:'jev',key:secret},auth)).status,200);
  let state=await(await fetch(origin+'/api/state',{headers:{Cookie:cookie}})).json();assert.equal(state.connections.find((x:any)=>x.name==='jev').configured,true);assert(!JSON.stringify(state).includes(secret));
  const publicAfterKey=await(await fetch(origin+'/api/public')).json();assert(!JSON.stringify(publicAfterKey).includes(secret));assert(!JSON.stringify(publicAfterKey).includes('credential'));assert(!('connections' in publicAfterKey));assert(!readFileSync(join(dir,'trader.db')).includes(Buffer.from(secret)));
- assert.equal((await post('settings',{aiEnabled:true,aiDailyLimit:2},auth)).status,200);
+ assert.equal((await post('settings',{aiMode:'gate',aiEnabled:true,aiDailyLimit:2},auth)).status,200);
  assert.equal((await post('start',{mode:'paper'},auth)).status,400); // Untested credential cannot start paid scoring.
  assert.equal((await post('start',{mode:'live'},auth)).status,400);
  assert.equal((await post('settings',{aiEnabled:false,aiDailyLimit:-1},auth)).status,400);
